@@ -79,27 +79,6 @@ class InspireMusicModel:
         self.fast = fast
         self.generator = "hifi"
 
-    def load(self, llm_model, flow_model, hift_model, wavtokenizer_model):
-        if llm_model is not None:
-            self.llm.load_state_dict(torch.load(llm_model, map_location=self.device, weights_only=True))
-            self.llm.to(self.device).to(self.dtype).eval()
-        else:
-            self.llm = None
-        if flow_model is not None:
-            self.flow.load_state_dict(torch.load(flow_model, map_location=self.device, weights_only=True))
-            self.flow.to(self.device).eval()
-        if hift_model is not None:
-            if ".pt" not in hift_model:
-                self.music_tokenizer = VQVAE(os.path.join(hift_model, 'config.json'), os.path.join(hift_model, 'model.pt'), with_encoder=True)
-            else:
-                self.music_tokenizer = VQVAE(os.path.join(os.path.dirname(hift_model), 'config.json'), hift_model, with_encoder=True)
-            self.music_tokenizer.to(self.device).eval()
-        if wavtokenizer_model is not None:
-            if ".pt" not in wavtokenizer_model:
-                self.wavtokenizer = WavTokenizer.from_pretrained_feat(os.path.join(wavtokenizer_model, 'config.yaml'), os.path.join(wavtokenizer_model, 'model.pt'))
-            else:
-                self.wavtokenizer = WavTokenizer.from_pretrained_feat(os.path.join(os.path.dirname(wavtokenizer_model), 'config.yaml'), wavtokenizer_model)
-            self.wavtokenizer.to(self.device)
 
     def load_jit(self, llm_text_encoder_model, llm_llm_model, flow_encoder_model):
         assert self.fp16 is True, "we only provide fp16 jit model, set fp16=True if you want to use jit model"
